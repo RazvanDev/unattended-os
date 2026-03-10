@@ -244,12 +244,15 @@ echo "sudo configured for wheel group"
 
 # ── Passwords ─────────────────────────────────────────────
 echo "--------------------------------------"
-echo "Set password for root:"
-passwd
-
+echo "Setting password for root: "
+ROOT_PASS=$(cfg '.root.password')
+echo "root:$(openssl passwd -6 "$ROOT_PASS")" | chpasswd -e
+echo "Password set for root"
 echo "--------------------------------------"
-echo "Set password for ${USERNAME}:"
-passwd ${USERNAME}
+echo "Setting password for ${USERNAME}: "
+USER_PASS=$(cfg '.user.password')
+echo "${USERNAME}:$(openssl passwd -6 "$USER_PASS")" | chpasswd -e
+echo "Password set for ${USERNAME}"
 
 CHROOT
 

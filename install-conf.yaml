@@ -45,3 +45,7 @@ packages:
 user:
   name:   raz
   groups: wheel
+  password: "<tbd>"
+
+root:
+  password: "<tbd>"
