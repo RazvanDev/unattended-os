@@ -1,0 +1,47 @@
+# ============================================================
+# Arch Linux Install Configuration
+# ============================================================
+
+# --- Partitions (sizes in MiB unless noted) -----------------
+partitions:
+  esp:    512      # EFI System Partition (MiB)
+  swap:   2048     # Swap (MiB)
+  root:   30720    # Root / (MiB) — 30GB
+  home:   40960    # Home /home (MiB) — 40GB
+  # media gets all remaining space
+
+# --- Filesystems --------------------------------------------
+filesystems:
+  root:   ext4
+  home:   ext4
+  media:  ext4
+
+# --- Mount points -------------------------------------------
+mounts:
+  media: /mnt/media
+
+# --- Locale & timezone --------------------------------------
+locale:
+  lang:     en_US.UTF-8
+  timezone: Europe/Bucharest
+
+# --- System -------------------------------------------------
+system:
+  hostname: archie
+  kernels:
+    - linux
+    - linux-lts
+
+# --- Packages (added to base during pacstrap) ---------------
+packages:
+  - vim
+  - networkmanager
+  - sudo
+  - grub
+  - efibootmgr
+  - os-prober
+
+# --- User ---------------------------------------------------
+user:
+  name:   raz
+  groups: wheel
