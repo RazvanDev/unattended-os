@@ -5,7 +5,7 @@ sec() { yq e "$1" "$SECRETS"; }
 
 load_config() {
   CONFIG="${1:-install-conf.yaml}"
-  SECRETS="${SECRETS_FILE:-install-secrets.yaml}"
+  SECRETS="${2:-${SECRETS_FILE:-install-secrets.yaml}}"
 
   [[ -f "$CONFIG" ]] || error "Config file not found: $CONFIG"
   [[ -f "$SECRETS" ]] || error "Secrets file not found: $SECRETS"
