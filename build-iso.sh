@@ -44,10 +44,10 @@ section "Cloning repo into ISO"
 git clone "$REPO_URL" "$PROFILE_DIR/airootfs/root/unattended-os"
 
 # ── Secrets file ─────────────────────────────────────────────
-section "Baking in secrets"
-[[ -f "/root/install-secrets.yaml" ]] || error "Secrets file not found at /root/install-secrets.yaml — mount it with -v"
-cp /root/install-secrets.yaml "$PROFILE_DIR/airootfs/root/unattended-os/install-secrets.yaml"
-log "Secrets baked in"
+section "Verifying secrets"
+[[ -f "$PROFILE_DIR/airootfs/root/unattended-os/install-secrets.yaml" ]] || \
+  error "Secrets file not found in repo — add install-secrets.yaml"
+log "Secrets verified"
 
 # ── Permissions ─────────────────────────────────────────────
 section "Setting file permissions"
