@@ -2,6 +2,8 @@
 Description=Unattended Arch Installer
 After=network-online.target
 Wants=network-online.target
+Conflicts=getty@tty1.service
+Before=getty@tty1.service
 
 [Service]
 Type=oneshot
