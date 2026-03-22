@@ -50,7 +50,7 @@ packages:
   - efibootmgr
   - os-prober
   - cryptsetup
-  - sshd
+  - openssh
 # --- User ---------------------------------------------------
 user:
   name:     raz
