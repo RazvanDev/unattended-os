@@ -3,6 +3,15 @@
 do_partition() {
   section "Partitioning $DISK"
 
+  # ── Cleanup previous run ──────────────────────────────
+  log "Cleaning up previous mounts..."
+  swapoff -a 2>/dev/null || true
+  umount -R /mnt 2>/dev/null || true
+  cryptsetup close cryptroot 2>/dev/null || true
+  cryptsetup close crypthome 2>/dev/null || true
+  cryptsetup close cryptswap 2>/dev/null || true
+  cryptsetup close cryptmedia 2>/dev/null || true
+
   wipefs -af "$DISK"
   sgdisk -Z "$DISK"
 
