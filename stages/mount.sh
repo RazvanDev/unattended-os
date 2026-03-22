@@ -1,4 +1,4 @@
-bash#!/usr/bin/env bash
+#!/usr/bin/env bash
 
 do_mount() {
   section "Mounting partitions"
