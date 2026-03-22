@@ -84,7 +84,13 @@ section "Pre-flight checks"
 [[ -d /sys/firmware/efi ]] || error "Not booted in UEFI mode. Enable EFI in your VM/BIOS settings."
 
 # Check internet
-ping -c 1 -W 3 archlinux.org &>/dev/null || error "No internet connection"
+log "Waiting for network..."
+for i in {1..10}; do
+  ping -c 1 -W 3 archlinux.org &>/dev/null && break
+  warn "Network not ready, retry $i/10..."
+  sleep 5
+done
+ping -c 1 -W 3 archlinux.org &>/dev/null || error "No internet connection after retries"
 
 log "All pre-flight checks passed"
 
@@ -277,7 +283,6 @@ log "Chroot configuration complete"
 
 # ── Done ────────────────────────────────────────────────────
 section "Installation complete"
-log "You can now reboot into your new Arch Linux system"
-log "Remember to remove the installation media before booting"
-echo ""
-warn "Run: reboot"
+log "Rebooting in 10 seconds..."
+sleep 10
+rebootecho ""

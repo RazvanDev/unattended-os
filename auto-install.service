@@ -1,0 +1,15 @@
+[Unit]
+Description=Unattended Arch Installer
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/unattended-os/install.sh /root/unattended-os/install-conf.yaml --unattended
+StandardOutput=journal+console
+StandardError=journal+console
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
