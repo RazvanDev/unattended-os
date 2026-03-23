@@ -51,21 +51,45 @@ mark_done() {
 run_stage() {
   local stage=$1
   shift
-  local fns=("$@")
+  local fns=()
+  local verify_fn=""
+
+  for arg in "$@"; do
+    if [[ "$arg" == verify_* ]]; then
+      verify_fn="$arg"
+    else
+      fns+=("$arg")
+    fi
+  done
 
   if stage_done "$stage"; then
     log "Skipping '$stage' — already completed"
-    return
+    return 0
   fi
 
   for fn in "${fns[@]}"; do
     $fn
   done
 
-  mark_done "$stage"
+  if [[ -n "$verify_fn" ]]; then
+    log "Verifying '$stage'..."
+    $verify_fn || error "Verification failed for stage '$stage'"
+  fi
 
-  # migrate state to disk after partitioning stage
+  mark_done "$stage"
   [[ "$stage" == "partitioning" ]] && migrate_state
 
+  return 0
+}
+
+cleanup_mounts() {
+  log "Cleaning up previous mounts..."
+  swapoff -a 2>/dev/null || true
+  cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
+  cryptsetup close "$MAPPER_HOME"  2>/dev/null || true
+  cryptsetup close "$MAPPER_SWAP"  2>/dev/null || true
+  cryptsetup close "$MAPPER_ROOT"  2>/dev/null || true
+  umount -R /mnt 2>/dev/null || true
+  sleep 2
   return 0
 }

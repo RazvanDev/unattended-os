@@ -24,13 +24,11 @@ source "$SCRIPT_DIR/lib/variables.sh"
 exec > >(tee -a "$LOG_FILE") 2>&1
 
 # ── Load stages ─────────────────────────────────────────────
-source "$SCRIPT_DIR/stages/partition.sh"
-source "$SCRIPT_DIR/stages/format.sh"
-source "$SCRIPT_DIR/stages/mount.sh"
-source "$SCRIPT_DIR/stages/pacstrap.sh"
-source "$SCRIPT_DIR/stages/chroot-setup.sh"
-source "$SCRIPT_DIR/stages/bootloader.sh"
-source "$SCRIPT_DIR/stages/fstab.sh"
+for f in "$SCRIPT_DIR"/stages/*.sh; do source "$f"; done
+
+# ── Load verificators ────────────────────────────────────────
+for f in "$SCRIPT_DIR"/verificators/*.sh; do source "$f"; done
+
 
 # ── Dependency check ─────────────────────────────────────────
 command -v yq    &>/dev/null || error "yq is required"
@@ -55,13 +53,7 @@ log "All pre-flight checks passed"
 
 # ── Auto-detect disk ─────────────────────────────────────────
 section "Detecting disk"
-DISK=$(lsblk -dpno NAME,TYPE,RM,SIZE \
-  | awk '$2=="disk" && $3=="0" {print $1, $4}' \
-  | sort -k2 -h \
-  | tail -1 \
-  | awk '{print $1}')
-[[ -n "$DISK" ]] || error "No suitable disk found"
-log "Target disk: $DISK"
+detect_disk
 
 warn "ALL DATA ON $DISK WILL BE DESTROYED"
 if [[ "$UNATTENDED" == false ]]; then
@@ -73,10 +65,13 @@ fi
 
 # ── Run stages ───────────────────────────────────────────────
 setup_variables
-run_stage "partitioning"       do_partition do_format do_mount
-run_stage "pacstrap"           do_pacstrap
-run_stage "fstab"              do_fstab
-run_stage "chroot"             do_chroot
+run_stage "partitioning"       do_partition do_format do_mount  verify_partitioning
+run_stage "pacstrap"           do_pacstrap                      verify_pacstrap
+run_stage "fstab"              do_fstab                         
+run_stage "locale"             do_locale                        
+run_stage "initramfs"          do_initramfs
+run_stage "services"           do_services
+run_stage "users"              do_users do_passwords
 run_stage "bootloader"         do_bootloader
 
 # ── Done ─────────────────────────────────────────────────────

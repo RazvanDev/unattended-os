@@ -7,7 +7,8 @@
 
 set -euo pipefail
 
-REPO_URL="https://github.com/RazvanDev/unattended-os.git"
+REPO_URL="${1:-https://github.com/RazvanDev/unattended-os.git}"
+BRANCH="${2:-main}"
 PROFILE_DIR="/root/myarch-iso"
 WORK_DIR="/tmp/archiso-work"
 OUT_DIR="/root/myarch-iso/out"
@@ -41,7 +42,7 @@ wget "$YQ_URL" -O "$PROFILE_DIR/airootfs/usr/local/bin/yq"
 
 # ── Repo ────────────────────────────────────────────────────
 section "Cloning repo into ISO"
-git clone "$REPO_URL" "$PROFILE_DIR/airootfs/root/unattended-os"
+git clone -b "$BRANCH" "$REPO_URL" "$PROFILE_DIR/airootfs/root/unattended-os"
 
 # ── Secrets file ─────────────────────────────────────────────
 section "Verifying secrets"
@@ -54,18 +55,18 @@ section "Setting file permissions"
 sed -i '/^\s*\[\"\/root\"\]/a\  ["/usr/local/bin/yq"]="0:0:755"\n  ["/root/unattended-os/install.sh"]="0:0:755"' \
   "$PROFILE_DIR/profiledef.sh"
 
-# ── Auto-install service ─────────────────────────────────────
-section "Installing auto-install service"
-cp "$PROFILE_DIR/airootfs/root/unattended-os/auto-install.service" \
-  "$PROFILE_DIR/airootfs/etc/systemd/system/auto-install.service"
+# # ── Auto-install service ─────────────────────────────────────
+# section "Installing auto-install service"
+# cp "$PROFILE_DIR/airootfs/root/unattended-os/auto-install.service" \
+#   "$PROFILE_DIR/airootfs/etc/systemd/system/auto-install.service"
 
-mkdir -p "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants"
-ln -sf /etc/systemd/system/auto-install.service \
-  "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/auto-install.service"
+# mkdir -p "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants"
+# ln -sf /etc/systemd/system/auto-install.service \
+#   "$PROFILE_DIR/airootfs/etc/systemd/system/multi-user.target.wants/auto-install.service"
 
-# ── Disable autologin ────────────────────────────────────────
-section "Disabling autologin"
-rm -f "$PROFILE_DIR/airootfs/etc/systemd/system/getty@tty1.service.d/autologin.conf"
+# # ── Disable autologin ────────────────────────────────────────
+# section "Disabling autologin"
+# rm -f "$PROFILE_DIR/airootfs/etc/systemd/system/getty@tty1.service.d/autologin.conf"
 
 # ── Build ────────────────────────────────────────────────────
 section "Building ISO"

@@ -1,34 +1,29 @@
 #!/usr/bin/env bash
 
+# ── Helper: mount a single partition ────────────────────────
+mount_partition() {
+  local part=$1        # e.g. /dev/sda3
+  local mapper=$2      # e.g. cryptroot
+  local mountpoint=$3  # e.g. /mnt/home
+  local encrypt=$4     # true/false
+
+  mkdir -p "$mountpoint"
+  if [[ "$encrypt" == "true" ]]; then
+    mount "/dev/mapper/$mapper" "$mountpoint"
+  else
+    mount "$part" "$mountpoint"
+  fi
+  log "Mounted $part → $mountpoint"
+  return 0
+}
+
 do_mount() {
   section "Mounting partitions"
 
-  # ── Root ──────────────────────────────────────────────
-  if [[ "$LUKS_ROOT" == "true" ]]; then
-    mount "/dev/mapper/$MAPPER_ROOT" /mnt
-  else
-    mount "$PART_ROOT" /mnt
-  fi
-
-  # ── ESP — never encrypted ─────────────────────────────
-  mkdir -p /mnt/boot
-  mount "$PART_ESP" /mnt/boot
-
-  # ── Home ──────────────────────────────────────────────
-  mkdir -p "/mnt${MOUNT_HOME}"
-  if [[ "$LUKS_HOME" == "true" ]]; then
-    mount "/dev/mapper/$MAPPER_HOME" "/mnt${MOUNT_HOME}"
-  else
-    mount "$PART_HOME" "/mnt${MOUNT_HOME}"
-  fi
-
-  # ── Media ─────────────────────────────────────────────
-  mkdir -p "${MOUNT_MEDIA}"
-  if [[ "$LUKS_MEDIA" == "true" ]]; then
-    mount "/dev/mapper/$MAPPER_MEDIA" "${MOUNT_MEDIA}"
-  else
-    mount "$PART_MEDIA" "${MOUNT_MEDIA}"
-  fi
+  mount_partition "$PART_ROOT"  "$MAPPER_ROOT"  "/mnt"                  "$LUKS_ROOT"
+  mount_partition "$PART_ESP"   ""              "/mnt/boot"             "false"
+  mount_partition "$PART_HOME"  "$MAPPER_HOME"  "/mnt${MOUNT_HOME}"     "$LUKS_HOME"
+  mount_partition "$PART_MEDIA" "$MAPPER_MEDIA" "/mnt${MOUNT_MEDIA}"    "$LUKS_MEDIA"
 
   log "All partitions mounted"
 
