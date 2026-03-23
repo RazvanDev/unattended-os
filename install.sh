@@ -76,7 +76,7 @@ run_stage "fstab"              do_fstab
 run_stage "locale"             do_locale
 run_stage "initramfs"          do_initramfs
 run_stage "services"           do_services
-run_stage "user"               do_users
+run_stage "users"               do_users do_passwords
 run_stage "bootloader"         do_bootloader
 
 # ── Done ─────────────────────────────────────────────────────
