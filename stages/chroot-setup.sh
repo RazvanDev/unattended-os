@@ -18,6 +18,10 @@ locale-gen
 echo "LANG=${LOCALE_LANG}" > /etc/locale.conf
 echo "Locale set to ${LOCALE_LANG}"
 
+# ── Console keymap ────────────────────────────────────────
+echo "KEYMAP=${KEYMAP}" > /etc/vconsole.conf
+echo "vconsole.conf created"
+
 # ── Hostname ──────────────────────────────────────────────
 echo "${HOSTNAME}" > /etc/hostname
 echo "Hostname set to ${HOSTNAME}"

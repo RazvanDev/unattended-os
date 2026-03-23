@@ -20,6 +20,7 @@ load_config() {
   MEDIA_MOUNT=$(cfg '.mounts.media')
   LOCALE_LANG=$(cfg '.locale.lang')
   TIMEZONE=$(cfg '.locale.timezone')
+  KEYMAP=$(cfg '.locale.keymap')
   HOSTNAME=$(cfg '.system.hostname')
   USERNAME=$(cfg '.user.name')
   USERGROUPS=$(cfg '.user.groups')

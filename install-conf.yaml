@@ -33,6 +33,7 @@ encryption:
 locale:
   lang:     en_US.UTF-8
   timezone: Europe/Bucharest
+  keymap:   us
 
 # --- System -------------------------------------------------
 system:
