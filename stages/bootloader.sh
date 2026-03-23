@@ -8,8 +8,6 @@ do_bootloader() {
   HOME_UUID=$(blkid -s UUID -o value "$PART_HOME")
   SWAP_UUID=$(blkid -s UUID -o value "$PART_SWAP")
 
-  exit 1
-
   arch-chroot /mnt /bin/bash <<EOF
 # ── GRUB cryptdevice ──────────────────────────────────────
 if [[ "${LUKS_ENABLED}" == "true" && "${LUKS_ROOT}" == "true" ]]; then

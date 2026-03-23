@@ -17,7 +17,6 @@ sed -i "s/^#${LOCALE_LANG}/${LOCALE_LANG}/" /etc/locale.gen
 locale-gen
 echo "LANG=${LOCALE_LANG}" > /etc/locale.conf
 echo "Locale set to ${LOCALE_LANG}"
-exit 1
 
 # ── Hostname ──────────────────────────────────────────────
 echo "${HOSTNAME}" > /etc/hostname
