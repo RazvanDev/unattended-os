@@ -69,3 +69,15 @@ run_stage() {
 
   return 0
 }
+
+cleanup_mounts() {
+  log "Cleaning up previous mounts..."
+  swapoff -a 2>/dev/null || true
+  cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
+  cryptsetup close "$MAPPER_HOME"  2>/dev/null || true
+  cryptsetup close "$MAPPER_SWAP"  2>/dev/null || true
+  cryptsetup close "$MAPPER_ROOT"  2>/dev/null || true
+  umount -R /mnt 2>/dev/null || true
+  sleep 2
+  return 0
+}
