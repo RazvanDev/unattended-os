@@ -49,6 +49,20 @@ EOF
   partprobe "$DISK"
   sleep 2
 
+  if [[ "$DISK" == *"nvme"* ]]; then
+    PART_ESP="${DISK}p1"
+    PART_SWAP="${DISK}p2"
+    PART_ROOT="${DISK}p3"
+    PART_HOME="${DISK}p4"
+    PART_MEDIA="${DISK}p5"
+  else
+    PART_ESP="${DISK}1"
+    PART_SWAP="${DISK}2"
+    PART_ROOT="${DISK}3"
+    PART_HOME="${DISK}4"
+    PART_MEDIA="${DISK}5"
+  fi
+
   log "Partitions created"
   return 0
 }
