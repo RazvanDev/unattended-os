@@ -28,9 +28,12 @@ source "$SCRIPT_DIR/stages/partition.sh"
 source "$SCRIPT_DIR/stages/format.sh"
 source "$SCRIPT_DIR/stages/mount.sh"
 source "$SCRIPT_DIR/stages/pacstrap.sh"
-source "$SCRIPT_DIR/stages/chroot-setup.sh"
-source "$SCRIPT_DIR/stages/bootloader.sh"
 source "$SCRIPT_DIR/stages/fstab.sh"
+source "$SCRIPT_DIR/stages/locale.sh"
+source "$SCRIPT_DIR/stages/initramfs.sh"
+source "$SCRIPT_DIR/stages/services.sh"
+source "$SCRIPT_DIR/stages/users.sh"
+source "$SCRIPT_DIR/stages/bootloader.sh"
 
 # ── Dependency check ─────────────────────────────────────────
 command -v yq    &>/dev/null || error "yq is required"
@@ -76,7 +79,10 @@ setup_variables
 run_stage "partitioning"       do_partition do_format do_mount
 run_stage "pacstrap"           do_pacstrap
 run_stage "fstab"              do_fstab
-run_stage "chroot"             do_chroot
+run_stage "locale"             do_locale
+run_stage "initramfs"          do_initramfs
+run_stage "services"           do_services
+run_stage "user"               do_user
 run_stage "bootloader"         do_bootloader
 
 # ── Done ─────────────────────────────────────────────────────
