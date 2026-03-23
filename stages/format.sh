@@ -11,12 +11,8 @@ do_format() {
     log "Skipping ESP format — wipe disabled"
   fi
 
-  mkswap "$PART_SWAP"
-  swapon "$PART_SWAP"
-  log "Swap formatted and activated"
-
   # ── Root ──────────────────────────────────────────────
-  if [[ "$WIPE_ROOT" == "true" ]]; then
+  if [[ "$WIPE_ROOT" == "true" ]] || ! cryptsetup isLuks "$PART_ROOT" 2>/dev/null; then
     if [[ "$LUKS_ROOT" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup luksFormat "$PART_ROOT" -
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_ROOT" "$MAPPER_ROOT" -
@@ -30,11 +26,11 @@ do_format() {
     if [[ "$LUKS_ROOT" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_ROOT" "$MAPPER_ROOT" -
     fi
-    log "Skipping root format — wipe disabled, opened existing"
+    log "Root wipe disabled — opened existing LUKS"
   fi
 
   # ── Home ──────────────────────────────────────────────
-  if [[ "$WIPE_HOME" == "true" ]]; then
+  if [[ "$WIPE_HOME" == "true" ]] || ! cryptsetup isLuks "$PART_HOME" 2>/dev/null; then
     if [[ "$LUKS_HOME" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup luksFormat "$PART_HOME" -
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_HOME" "$MAPPER_HOME" -
@@ -48,12 +44,12 @@ do_format() {
     if [[ "$LUKS_HOME" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_HOME" "$MAPPER_HOME" -
     fi
-    log "Skipping home format — wipe disabled, opened existing"
+    log "Home wipe disabled — opened existing LUKS"
   fi
 
   # ── Swap ──────────────────────────────────────────────
-  swapoff "$PART_SWAP" 2>/dev/null || true   # deactivate if in use
-  if [[ "$WIPE_SWAP" == "true" ]]; then
+  swapoff "$PART_SWAP" 2>/dev/null || true
+  if [[ "$WIPE_SWAP" == "true" ]] || ! cryptsetup isLuks "$PART_SWAP" 2>/dev/null; then
     if [[ "$LUKS_SWAP" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup luksFormat "$PART_SWAP" -
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_SWAP" "$MAPPER_SWAP" -
@@ -66,18 +62,17 @@ do_format() {
       log "Swap formatted and activated"
     fi
   else
-    # just activate existing swap
     if [[ "$LUKS_SWAP" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_SWAP" "$MAPPER_SWAP" -
       swapon "/dev/mapper/$MAPPER_SWAP"
     else
       swapon "$PART_SWAP"
     fi
-    log "Skipping swap format — wipe disabled, activated existing"
+    log "Swap wipe disabled — opened existing LUKS"
   fi
 
-  # ── Media ──────────────────────────────────────────────
-  if [[ "$WIPE_MEDIA" == "true" ]]; then
+  # ── Media ─────────────────────────────────────────────
+  if [[ "$WIPE_MEDIA" == "true" ]] || ! cryptsetup isLuks "$PART_MEDIA" 2>/dev/null; then
     if [[ "$LUKS_MEDIA" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup luksFormat "$PART_MEDIA" -
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_MEDIA" "$MAPPER_MEDIA" -
@@ -91,7 +86,7 @@ do_format() {
     if [[ "$LUKS_MEDIA" == "true" ]]; then
       echo -n "$LUKS_PASSPHRASE" | cryptsetup open "$PART_MEDIA" "$MAPPER_MEDIA" -
     fi
-    log "Skipping media format — wipe disabled, opened existing"
+    log "Media wipe disabled — opened existing LUKS"
   fi
 
   return 0
