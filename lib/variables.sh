@@ -1,5 +1,16 @@
 #!/usr/bin/env bash
 
+detect_disk() {
+  DISK=$(lsblk -dpno NAME,TYPE,RM,SIZE \
+    | awk '$2=="disk" && $3=="0" {print $1, $4}' \
+    | sort -k2 -h \
+    | tail -1 \
+    | awk '{print $1}')
+  [[ -n "$DISK" ]] || error "No suitable disk found"
+  log "Target disk: $DISK"
+  return 0
+}
+
 setup_variables() {
   # ── Partition names ──────────────────────────────────
   if [[ "$DISK" == *"nvme"* ]]; then

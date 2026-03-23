@@ -58,13 +58,7 @@ log "All pre-flight checks passed"
 
 # ── Auto-detect disk ─────────────────────────────────────────
 section "Detecting disk"
-DISK=$(lsblk -dpno NAME,TYPE,RM,SIZE \
-  | awk '$2=="disk" && $3=="0" {print $1, $4}' \
-  | sort -k2 -h \
-  | tail -1 \
-  | awk '{print $1}')
-[[ -n "$DISK" ]] || error "No suitable disk found"
-log "Target disk: $DISK"
+detect_disk
 
 warn "ALL DATA ON $DISK WILL BE DESTROYED"
 if [[ "$UNATTENDED" == false ]]; then
@@ -82,7 +76,7 @@ run_stage "fstab"              do_fstab
 run_stage "locale"             do_locale
 run_stage "initramfs"          do_initramfs
 run_stage "services"           do_services
-run_stage "user"               do_user
+run_stage "user"               do_users
 run_stage "bootloader"         do_bootloader
 
 # ── Done ─────────────────────────────────────────────────────

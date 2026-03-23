@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 do_users() {
-  section "Configuring user"
+  section "Configuring users"
 
   arch-chroot /mnt /bin/bash <<EOF
 set -euo pipefail
