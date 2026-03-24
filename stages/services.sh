@@ -6,13 +6,16 @@ do_services() {
   arch-chroot /mnt /bin/bash <<EOF
 set -euo pipefail
 
-# ── NetworkManager ────────────────────────────────────────
-systemctl enable NetworkManager
-echo "NetworkManager enabled"
+# ── Enable services ───────────────────────────────────────
+for svc in ${ENABLED_SERVICES}; do
+  systemctl enable "\$svc"
+  echo "\$svc enabled"
+done
 
-# ── SSH ───────────────────────────────────────────────────
-systemctl enable sshd
-echo "sshd enabled"
+# ── Start services ────────────────────────────────────────
+for svc in ${START_SERVICES}; do
+  systemctl start "\$svc" 2>/dev/null || echo "\$svc start skipped (will start on boot)"
+done
 EOF
 
   log "Services configured"

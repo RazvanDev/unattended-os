@@ -57,6 +57,16 @@ packages:
   - os-prober
   - cryptsetup
   - openssh
+
+# --- Services (enabled or started during services) ---------------
+services:
+  - name: NetworkManager
+    enabled: true
+    start: true
+  - name: sshd
+    enabled: true
+    start: true
+
 # --- User ---------------------------------------------------
 user:
   name:     raz

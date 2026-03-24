@@ -59,6 +59,8 @@ load_config() {
   HOSTNAME=$(cfg '.system.hostname')
   KERNELS=$(cfg '.system.kernels[]' | tr '\n' ' ')
   EXTRA_PACKAGES=$(cfg '.packages[]' | tr '\n' ' ')
+  ENABLED_SERVICES=$(cfg '.services[] | select(.enabled == true) | .name' | tr '\n' ' ')
+  START_SERVICES=$(cfg '.services[] | select(.start == true) | .name' | tr '\n' ' ')
 
   # User
   USERNAME=$(cfg '.user.name')

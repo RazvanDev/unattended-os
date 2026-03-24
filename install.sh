@@ -68,11 +68,11 @@ setup_variables
 run_stage "partitioning"       do_partition do_format do_mount  verify_partitioning
 run_stage "pacstrap"           do_pacstrap                      verify_pacstrap
 run_stage "fstab"              do_fstab                         
-run_stage "locale"             do_locale                        
-run_stage "initramfs"          do_initramfs
-run_stage "services"           do_services
-run_stage "users"              do_users do_passwords
-run_stage "bootloader"         do_bootloader
+run_stage "locale"             do_locale                        verify_locale                        
+run_stage "initramfs"          do_initramfs                     verify_initramfs
+run_stage "services"           do_services                      verify_services
+run_stage "users"              do_users do_passwords            
+run_stage "bootloader"         do_bootloader                    
 
 # ── Done ─────────────────────────────────────────────────────
 section "Installation complete"
