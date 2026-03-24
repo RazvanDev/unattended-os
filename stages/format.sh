@@ -52,12 +52,16 @@ do_format() {
     log "Skipping ESP format — wipe disabled"
   fi
 
-  # ── Swap — deactivate first ───────────────────────────
-  swapoff "$PART_SWAP" 2>/dev/null || true
+  mkswap "$PART_SWAP"
+  swapon "$PART_SWAP"
+  log "Swap formatted and activated"
 
   format_partition "$PART_ROOT"  "$MAPPER_ROOT"  "$FS_ROOT"  "$WIPE_ROOT"  "$LUKS_ROOT"  "Root"
   format_partition "$PART_HOME"  "$MAPPER_HOME"  "$FS_HOME"  "$WIPE_HOME"  "$LUKS_HOME"  "Home"
+  
+  swapoff "$PART_SWAP" 2>/dev/null || true
   format_partition "$PART_SWAP"  "$MAPPER_SWAP"  "swap"      "$WIPE_SWAP"  "$LUKS_SWAP"  "Swap"
+  
   format_partition "$PART_MEDIA" "$MAPPER_MEDIA" "$FS_MEDIA" "$WIPE_MEDIA" "$LUKS_MEDIA" "Media"
 
   return 0
