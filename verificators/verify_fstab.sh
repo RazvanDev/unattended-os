@@ -11,11 +11,11 @@ verify_fstab() {
     { warn "Verify failed: fstab is empty"; failed=1; }
 
   # verify root entry exists
-  grep -q " / " "/mnt/etc/fstab" || \
+  grep -qE '[[:space:]]/[[:space:]]' "/mnt/etc/fstab" || \
     { warn "Verify failed: root entry missing from fstab"; failed=1; }
 
   # verify boot entry exists
-  grep -q " /boot " "/mnt/etc/fstab" || \
+  grep -qE '[[:space:]]/boot[[:space:]]' "/mnt/etc/fstab" || \
     { warn "Verify failed: boot entry missing from fstab"; failed=1; }
 
   # verify swap entry exists
