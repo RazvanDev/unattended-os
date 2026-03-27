@@ -8,7 +8,7 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/RazvanDev/unattended-os.git"
-BRANCH="refactoring-2"
+BRANCH="ssh-nftables-kernel-hardening"
 PROFILE_DIR="/root/myarch-iso"
 WORK_DIR="/tmp/archiso-work"
 OUT_DIR="/root/myarch-iso/out"

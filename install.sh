@@ -72,6 +72,7 @@ run_stage "locale"             do_locale                        verify_locale
 run_stage "initramfs"          do_initramfs                     verify_initramfs
 run_stage "services"           do_services                      verify_services
 run_stage "users"              do_users do_passwords            verify_users
+run_stage "configs"            do_configs                       verify_configs
 run_stage "bootloader"         do_bootloader                    verify_bootloader
 
 # ── Done ─────────────────────────────────────────────────────
