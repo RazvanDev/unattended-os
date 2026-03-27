@@ -25,11 +25,11 @@ STATE_FILE="/tmp/install-state"
 migrate_state() {
   if [[ -f "/tmp/install-state" ]]; then
     cp /tmp/install-state /mnt/install-state
-    declare -g STATE_FILE="/mnt/install-state"
+    STATE_FILE="/mnt/install-state"
 
     mkdir -p /mnt/var/log/unattended-os
     cp "$LOG_FILE" "/mnt/var/log/unattended-os/$(basename "$LOG_FILE")"
-    declare -g LOG_FILE="/mnt/var/log/unattended-os/$(basename "$LOG_FILE")"
+    LOG_FILE="/mnt/var/log/unattended-os/$(basename "$LOG_FILE")"
     log "State and log migrated to disk"
   fi
   return 0
