@@ -1,20 +1,21 @@
 verify_configs() {
   local failed=0
+  SSH_CONFIG_FILE=/mnt/etc/ssh/sshd_config
 
-  [[ -f "/mnt/etc/ssh/sshd_config.d/99-hardened.conf" ]] || \
-    { warn "Verify failed: 99-hardened.conf missing"; failed=1; }
+  [[ -f "$SSH_CONFIG_FILE" ]] || \
+    { warn "Verify failed: $SSH_CONFIG_FILE missing"; failed=1; }
 
   [[ -f "/mnt/etc/ssh/banner.txt" ]] || \
     { warn "Verify failed: ssh banner missing"; failed=1; }
 
-  grep -q "PasswordAuthentication no" "/mnt/etc/ssh/sshd_config.d/99-hardened.conf" || \
+  grep -q "PasswordAuthentication no" "$SSH_CONFIG_FILE" || \
     { warn "Verify failed: PasswordAuthentication not hardened"; failed=1; }
 
-  grep -q "PermitRootLogin no" "/mnt/etc/ssh/sshd_config.d/99-hardened.conf" || \
+  grep -q "PermitRootLogin no" "$SSH_CONFIG_FILE" || \
     { warn "Verify failed: PermitRootLogin not hardened"; failed=1; }
 
-  [[ "$(stat -c %a /mnt/etc/ssh/sshd_config.d/99-hardened.conf)" == "600" ]] || \
-    { warn "Verify failed: 99-hardened.conf permissions incorrect"; failed=1; }
+  [[ "$(stat -c %a $SSH_CONFIG_FILE)" == "600" ]] || \
+    { warn "Verify failed: $SSH_CONFIG_FILE permissions incorrect"; failed=1; }
 
   [[ $failed -eq 0 ]] || error "configs verification failed"
   log "configs verified ✓"
