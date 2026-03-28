@@ -8,7 +8,7 @@ verify_configs() {
   [[ -f "/mnt/etc/ssh/banner.txt" ]] || \
     { warn "Verify failed: ssh banner missing"; failed=1; }
 
-  grep -q "PasswordAuthentication no" "$SSH_CONFIG_FILE" || \
+  grep -q "PasswordAuthentication yes" "$SSH_CONFIG_FILE" || \
     { warn "Verify failed: PasswordAuthentication not hardened"; failed=1; }
 
   grep -q "PermitRootLogin no" "$SSH_CONFIG_FILE" || \

@@ -57,6 +57,8 @@ packages:
   - os-prober
   - cryptsetup
   - openssh
+  - nftables
+  - iptables-nft
 
 # --- Services (enabled or started during services) ---------------
 services:
