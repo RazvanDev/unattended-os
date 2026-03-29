@@ -1,4 +1,4 @@
-do_configs() {
+do_ssh_config() {
   section "Applying hardened configs"
 
   # guard — fail early if dynamic values are missing

@@ -1,4 +1,4 @@
-verify_configs() {
+verify_ssh_config() {
   local failed=0
   SSH_CONFIG_FILE=/mnt/etc/ssh/sshd_config
 
