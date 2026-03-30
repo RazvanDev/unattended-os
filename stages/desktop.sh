@@ -10,10 +10,13 @@ do_desktop() {
   fi
 
   log "installing desktop environment"
-  pacman -S xorg-server xorg-xinit plasma sddm pipewire pipewire-pulse wireplumber mesa xf86-video-qxl noto-fonts ttf-liberation --noconfirm
+  arch-chroot /mnt pacman -S --noconfirm \
+    xorg-server xorg-xinit plasma sddm \
+    pipewire pipewire-pulse wireplumber \
+    mesa xf86-video-qxl noto-fonts ttf-liberation  
   
   log "enabling display manager"
-  systemctl enable ssdm
+  arch-chroot /mnt systemctl enable sddm
 
   log "desktop successfully installed"
   return 0
