@@ -58,32 +58,23 @@ fi
 setup_variables
 
 # ── Resume detection ─────────────────────────────────────────
-if grep -q "^partitioning$" "/tmp/install-state" 2>/dev/null || \
-   cryptsetup isLuks "$PART_ROOT" 2>/dev/null; then
+if grep -q "^pacstrap:completed$" "/tmp/install-state" 2>/dev/null || \
+   grep -q "^pacstrap:completed$" "/mnt/install-state" 2>/dev/null; then
 
-  log "Previous partitioning detected — attempting remount"
+  log "Previous install detected past pacstrap — attempting remount"
 
   if ! mountpoint -q /mnt; then
-    # force wipe=false — open existing LUKS without reformatting
-    _WIPE_ROOT=$WIPE_ROOT
-    _WIPE_HOME=$WIPE_HOME
-    _WIPE_SWAP=$WIPE_SWAP
-    _WIPE_MEDIA=$WIPE_MEDIA
+    _WIPE_ROOT=$WIPE_ROOT; _WIPE_HOME=$WIPE_HOME
+    _WIPE_SWAP=$WIPE_SWAP; _WIPE_MEDIA=$WIPE_MEDIA
 
-    WIPE_ROOT=false
-    WIPE_HOME=false
-    WIPE_SWAP=false
-    WIPE_MEDIA=false
+    WIPE_ROOT=false; WIPE_HOME=false
+    WIPE_SWAP=false; WIPE_MEDIA=false
 
     do_format
     do_mount
 
-    # restore wipe flags
-    WIPE_ROOT=$_WIPE_ROOT
-    WIPE_HOME=$_WIPE_HOME
-    WIPE_SWAP=$_WIPE_SWAP
-    WIPE_MEDIA=$_WIPE_MEDIA
-
+    WIPE_ROOT=$_WIPE_ROOT; WIPE_HOME=$_WIPE_HOME
+    WIPE_SWAP=$_WIPE_SWAP; WIPE_MEDIA=$_WIPE_MEDIA
     unset _WIPE_ROOT _WIPE_HOME _WIPE_SWAP _WIPE_MEDIA
   fi
 
@@ -92,6 +83,11 @@ if grep -q "^partitioning$" "/tmp/install-state" 2>/dev/null || \
     STATE_FILE="/mnt/install-state"
     log "Resuming from /mnt/install-state"
   fi
+
+else
+  # no valid install past pacstrap — wipe state and start fresh
+  log "No valid previous install — starting fresh"
+  rm -f /tmp/install-state 2>/dev/null || true
 fi
 
 run_stage "partitioning"       do_partition do_format do_mount  verify_partitioning

@@ -35,19 +35,26 @@ migrate_state() {
   return 0
 }
 
+mark_stage_start() {
+  echo "${1}:in-progress" >> "$STATE_FILE"
+}
+
+mark_stage_done() {
+  sed -i "s|^${1}:in-progress$|${1}:completed|" "$STATE_FILE"
+  # sync log to disk after every completed stage
+  [[ -d "/mnt/var/log/unattended-os" ]] && \
+    cp "$LOG_FILE" \
+       "/mnt/var/log/unattended-os/$(basename "$LOG_FILE")" 2>/dev/null || true
+}
+
+mark_stage_failed() {
+  sed -i "s|^${1}:in-progress$|${1}:failed|" "$STATE_FILE"
+}
+
 stage_done() {
   echo "DEBUG mark_done: writing '$1' to $STATE_FILE" >&2
   sleep 10
-  grep -q "^${1}$" "$STATE_FILE" 2>/dev/null
-}
-
-mark_done() {
-  echo "$1" >> "$STATE_FILE"
-  # sync log to disk after every completed stage
-  [[ -d "/mnt/var/log/unattended-os" ]] && \
-    cp "/tmp/install-attempt-${ATTEMPT}.log" \
-       "/mnt/var/log/unattended-os/install-attempt-${ATTEMPT}.log" 2>/dev/null || true
-  return 0
+  grep -q "^${1}:completed$" "$STATE_FILE" 2>/dev/null
 }
 
 CURRENT_STAGE=""
@@ -72,35 +79,33 @@ run_stage() {
     return 0
   fi
 
+  mark_stage_start "$stage"
+
   for fn in "${fns[@]}"; do
-    $fn
+    $fn || { mark_stage_failed "$stage"; error "Stage '$stage' failed at $fn"; }
   done
 
   if [[ -n "$verify_fn" ]]; then
     log "Verifying '$stage'..."
-    $verify_fn || error "Verification failed for stage '$stage'"
+    $verify_fn || { mark_stage_failed "$stage"; error "Verification failed for stage '$stage'"; }
   fi
 
-  mark_done "$stage"
+  mark_stage_done "$stage"
   [[ "$stage" == "partitioning" ]] && migrate_state
 
   return 0
 }
 
 cleanup_mounts() {
-  local wipe_stages=("partitioning" "pacstrap")
   local last_completed=""
-  
-  # read last completed stage from state file
+
   if [[ -f "/mnt/install-state" ]]; then
-    last_completed=$(tail -1 /mnt/install-state)
+    last_completed=$(grep ":completed$" /mnt/install-state | tail -1)
   elif [[ -f "/tmp/install-state" ]]; then
-    last_completed=$(tail -1 /tmp/install-state)
+    last_completed=$(grep ":completed$" /tmp/install-state | tail -1)
   fi
 
-  # if last completed stage is in wipe_stages or nothing completed yet
-  # do full cleanup
-  if [[ -z "$last_completed" || " ${wipe_stages[@]} " =~ " ${last_completed} " ]]; then
+  if [[ -z "$last_completed" || "$last_completed" =~ ^(partitioning|pacstrap) ]]; then
     warn "Cleaning up mounts and LUKS mappers..."
     swapoff -a 2>/dev/null || true
     cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
