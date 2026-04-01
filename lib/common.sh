@@ -50,8 +50,11 @@ mark_done() {
   return 0
 }
 
+CURRENT_STAGE=""
+
 run_stage() {
   local stage=$1
+  CURRENT_STAGE="$stage"
   shift
   local fns=()
   local verify_fn=""
@@ -85,23 +88,32 @@ run_stage() {
 }
 
 cleanup_mounts() {
-  # guard — skip if mapper variables aren't set yet (early failure before setup_variables)
-  [[ -z "${MAPPER_ROOT:-}" ]] && {
-    warn "Cleanup: mapper variables not set, skipping LUKS close"
-    umount -R /mnt 2>/dev/null || true
-    return 0
-  }
+  local wipe_stages=("partitioning" "pacstrap")
+  local last_completed=""
+  
+  # read last completed stage from state file
+  if [[ -f "/mnt/install-state" ]]; then
+    last_completed=$(tail -1 /mnt/install-state)
+  elif [[ -f "/tmp/install-state" ]]; then
+    last_completed=$(tail -1 /tmp/install-state)
+  fi
 
-  warn "Cleaning up mounts and LUKS mappers..."
-  swapoff -a 2>/dev/null || true
-  cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
-  cryptsetup close "$MAPPER_HOME"  2>/dev/null || true
-  cryptsetup close "$MAPPER_SWAP"  2>/dev/null || true
-  cryptsetup close "$MAPPER_ROOT"  2>/dev/null || true
-  umount -R /mnt 2>/dev/null || true
-  sleep 2
+  # if last completed stage is in wipe_stages or nothing completed yet
+  # do full cleanup
+  if [[ -z "$last_completed" || " ${wipe_stages[@]} " =~ " ${last_completed} " ]]; then
+    warn "Cleaning up mounts and LUKS mappers..."
+    swapoff -a 2>/dev/null || true
+    cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
+    cryptsetup close "$MAPPER_HOME"  2>/dev/null || true
+    cryptsetup close "$MAPPER_SWAP"  2>/dev/null || true
+    cryptsetup close "$MAPPER_ROOT"  2>/dev/null || true
+    umount -R /mnt 2>/dev/null || true
+  else
+    warn "Failed after '${last_completed}' — preserving mounts for retry"
+  fi
   return 0
 }
+
 
 # ── Trap ─────────────────────────────────────────────────────
 # ERR  — fires on any command returning non-zero (caught by set -e)
