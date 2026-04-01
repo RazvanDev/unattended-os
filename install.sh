@@ -64,28 +64,38 @@ if grep -q "^pacstrap:completed$" "/tmp/install-state" 2>/dev/null || \
   log "Previous install detected past pacstrap — attempting remount"
 
   if ! mountpoint -q /mnt; then
-    _WIPE_ROOT=$WIPE_ROOT; _WIPE_HOME=$WIPE_HOME
-    _WIPE_SWAP=$WIPE_SWAP; _WIPE_MEDIA=$WIPE_MEDIA
+    _WIPE_ESP=$WIPE_ESP
+    _WIPE_ROOT=$WIPE_ROOT
+    _WIPE_LOG=$WIPE_LOG
+    _WIPE_HOME=$WIPE_HOME
+    _WIPE_SWAP=$WIPE_SWAP
+    _WIPE_MEDIA=$WIPE_MEDIA
 
-    WIPE_ROOT=false; WIPE_HOME=false
-    WIPE_SWAP=false; WIPE_MEDIA=false
+    WIPE_ESP=false
+    WIPE_ROOT=false
+    WIPE_LOG=false
+    WIPE_HOME=false
+    WIPE_SWAP=false
+    WIPE_MEDIA=false
 
     do_format
     do_mount
 
-    WIPE_ROOT=$_WIPE_ROOT; WIPE_HOME=$_WIPE_HOME
-    WIPE_SWAP=$_WIPE_SWAP; WIPE_MEDIA=$_WIPE_MEDIA
-    unset _WIPE_ROOT _WIPE_HOME _WIPE_SWAP _WIPE_MEDIA
+    WIPE_ESP=$_WIPE_ESP
+    WIPE_ROOT=$_WIPE_ROOT
+    WIPE_LOG=$_WIPE_LOG
+    WIPE_HOME=$_WIPE_HOME
+    WIPE_SWAP=$_WIPE_SWAP
+    WIPE_MEDIA=$_WIPE_MEDIA
+    unset _WIPE_ESP _WIPE_ROOT _WIPE_LOG _WIPE_HOME _WIPE_SWAP _WIPE_MEDIA
   fi
 
-  # prefer /mnt state — more complete than /tmp
   if [[ -f "/mnt/install-state" ]]; then
     STATE_FILE="/mnt/install-state"
     log "Resuming from /mnt/install-state"
   fi
 
 else
-  # no valid install past pacstrap — wipe state and start fresh
   log "No valid previous install — starting fresh"
   rm -f /tmp/install-state 2>/dev/null || true
 fi

@@ -7,6 +7,7 @@ verify_partitioning() {
   [[ -b "$PART_ESP" ]]   || { warn "Verify failed: ESP partition $PART_ESP missing";   failed=1; }
   [[ -b "$PART_SWAP" ]]  || { warn "Verify failed: swap partition $PART_SWAP missing"; failed=1; }
   [[ -b "$PART_ROOT" ]]  || { warn "Verify failed: root partition $PART_ROOT missing"; failed=1; }
+  [[ -b "$PART_LOG" ]]   || { warn "Verify failed: log partition $PART_LOG missing";   failed=1; }
   [[ -b "$PART_HOME" ]]  || { warn "Verify failed: home partition $PART_HOME missing"; failed=1; }
   [[ -b "$PART_MEDIA" ]] || { warn "Verify failed: media partition $PART_MEDIA missing"; failed=1; }
 
@@ -15,6 +16,9 @@ verify_partitioning() {
 
   # verify ESP is mounted
   mountpoint -q /mnt/boot || { warn "Verify failed: /mnt/boot not mounted"; failed=1; }
+
+  # verify log is mounted                                                                          
+  mountpoint -q "/mnt${MOUNT_LOG}" || { warn "Verify failed: /mnt${MOUNT_LOG} not mounted"; failed=1; }
 
   # verify home is mounted
   mountpoint -q "/mnt${MOUNT_HOME}" || { warn "Verify failed: /mnt${MOUNT_HOME} not mounted"; failed=1; }

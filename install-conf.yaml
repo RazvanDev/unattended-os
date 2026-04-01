@@ -16,11 +16,18 @@ partitions:
     wipe:    true
     encrypt: true
   root:   
-    size:    30  
+    size:    25  
     unit:    G
     wipe:    true
     fs:      ext4
     encrypt: true
+  log:             
+    size:    5
+    unit:    G
+    wipe:    true
+    fs:      ext4
+    encrypt: true
+    mount:   /var/log
   home:   
     size:    40   
     unit:    G

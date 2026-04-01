@@ -6,12 +6,21 @@ mount_partition() {
   local mapper=$2      # e.g. cryptroot
   local mountpoint=$3  # e.g. /mnt/home
   local encrypt=$4     # true/false
+  local options=$5     # optional mount options
 
   mkdir -p "$mountpoint"
   if [[ "$encrypt" == "true" ]]; then
-    mount "/dev/mapper/$mapper" "$mountpoint"
+    if [[ -n "$options" ]]; then
+      mount -o "$options" "/dev/mapper/$mapper" "$mountpoint"
+    else
+      mount "/dev/mapper/$mapper" "$mountpoint"
+    fi
   else
-    mount "$part" "$mountpoint"
+    if [[ -n "$options" ]]; then
+      mount -o "$options" "$part" "$mountpoint"
+    else
+      mount "$part" "$mountpoint"
+    fi
   fi
   log "Mounted $part → $mountpoint"
   return 0
@@ -22,6 +31,7 @@ do_mount() {
 
   mount_partition "$PART_ROOT"  "$MAPPER_ROOT"  "/mnt"                  "$LUKS_ROOT"
   mount_partition "$PART_ESP"   ""              "/mnt/boot"             "false"
+  mount_partition "$PART_LOG"   "$MAPPER_LOG"   "/mnt${MOUNT_LOG}"      "$LUKS_LOG"   "noexec,nosuid,nodev"
   mount_partition "$PART_HOME"  "$MAPPER_HOME"  "/mnt${MOUNT_HOME}"     "$LUKS_HOME"
   mount_partition "$PART_MEDIA" "$MAPPER_MEDIA" "/mnt${MOUNT_MEDIA}"    "$LUKS_MEDIA"
 

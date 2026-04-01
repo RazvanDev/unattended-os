@@ -40,6 +40,7 @@ do_format() {
   fi
 
   format_partition "$PART_ROOT"  "$MAPPER_ROOT"  "$FS_ROOT"  "$WIPE_ROOT"  "$LUKS_ROOT"  "Root"
+  format_partition "$PART_LOG"   "$MAPPER_LOG"   "$FS_LOG"   "$WIPE_LOG"   "$LUKS_LOG"   "Log"
   format_partition "$PART_HOME"  "$MAPPER_HOME"  "$FS_HOME"  "$WIPE_HOME"  "$LUKS_HOME"  "Home"
   format_partition "$PART_MEDIA" "$MAPPER_MEDIA" "$FS_MEDIA" "$WIPE_MEDIA" "$LUKS_MEDIA" "Media"
 

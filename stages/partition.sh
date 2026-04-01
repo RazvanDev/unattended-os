@@ -17,6 +17,7 @@ n
 +${ESP_SIZE}M
 t
 1
+1
 n
 2
 
@@ -31,9 +32,13 @@ n
 n
 4
 
-+${HOME_SIZE}M
++${LOG_SIZE}M
 n
 5
+
++${HOME_SIZE}M
+n
+6
 
 
 w
@@ -46,14 +51,16 @@ EOF
     PART_ESP="${DISK}p1"
     PART_SWAP="${DISK}p2"
     PART_ROOT="${DISK}p3"
-    PART_HOME="${DISK}p4"
-    PART_MEDIA="${DISK}p5"
+    PART_LOG="${DISK}p4"
+    PART_HOME="${DISK}p5"
+    PART_MEDIA="${DISK}p6"
   else
     PART_ESP="${DISK}1"
     PART_SWAP="${DISK}2"
     PART_ROOT="${DISK}3"
-    PART_HOME="${DISK}4"
-    PART_MEDIA="${DISK}5"
+    PART_LOG="${DISK}4"
+    PART_HOME="${DISK}5"
+    PART_MEDIA="${DISK}6"
   fi
 
   log "Partitions created"

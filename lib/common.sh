@@ -109,6 +109,7 @@ cleanup_mounts() {
     warn "Cleaning up mounts and LUKS mappers..."
     swapoff -a 2>/dev/null || true
     cryptsetup close "$MAPPER_MEDIA" 2>/dev/null || true
+    cryptsetup close "$MAPPER_LOG"   2>/dev/null || true
     cryptsetup close "$MAPPER_HOME"  2>/dev/null || true
     cryptsetup close "$MAPPER_SWAP"  2>/dev/null || true
     cryptsetup close "$MAPPER_ROOT"  2>/dev/null || true
