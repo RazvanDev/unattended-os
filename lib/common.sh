@@ -24,7 +24,7 @@ STATE_FILE="/tmp/install-state"
 
 migrate_state() {
   if [[ -f "/tmp/install-state" ]]; then
-    cp /tmp/install-state /mnt/install-state
+    mv /tmp/install-state /mnt/install-state
     STATE_FILE="/mnt/install-state"
 
     mkdir -p /mnt/var/log/unattended-os
